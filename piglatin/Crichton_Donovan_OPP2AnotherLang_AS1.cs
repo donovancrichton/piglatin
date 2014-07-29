@@ -117,13 +117,13 @@ public class FormPigLatin : Form {
       this.Text = "Pig Latin Translator";
    }
    
-	[STAThread]
-	static void Main() {
-       //set window style to current windows theme
-   	 Application.EnableVisualStyles();
-       //Application.SetCompatibleTextRenderingDefault(false);
-       Application.Run(new FormPigLatin());
-	}
+   [STAThread]
+   static void Main() {
+      //set window style to current windows theme
+      Application.EnableVisualStyles();
+      //Application.SetCompatibleTextRenderingDefault(false);
+      Application.Run(new FormPigLatin());
+   }
 
    //exit upon click
    private void btnExit_Click(object sender, System.EventArgs e) {
@@ -258,6 +258,6 @@ public class FormPigLatin : Form {
       else if (isCapital(c)) {
          return (char) ((int) c + 32);
       }
-      else return ' ';
+      else return c;
    }
 }
