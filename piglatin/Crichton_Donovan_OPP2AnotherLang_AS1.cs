@@ -51,13 +51,14 @@ public class FormPigLatin : Form {
       topPos += lblEnglish.Height;
        
         //English textBox  
-        this.tbxEnglish.AcceptsReturn = true;
-        this.tbxEnglish.AcceptsTab = true;
+      this.tbxEnglish.AcceptsReturn = true;
+      this.tbxEnglish.AcceptsTab = true;
       this.tbxEnglish.Location = new Point(leftPos, topPos);
       this.tbxEnglish.Font = new Font(FontFamily.GenericSansSerif, 12);
       this.tbxEnglish.Size = new Size(fieldWidth, fieldHeight);
-        this.tbxEnglish.Multiline = true;
-        this.tbxEnglish.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+      this.tbxEnglish.Multiline = true;
+      this.tbxEnglish.ScrollBars = 
+			System.Windows.Forms.ScrollBars.Vertical;
       this.Name = "tbxEnglish";
       topPos += tbxEnglish.Height + 50;
 
@@ -75,7 +76,8 @@ public class FormPigLatin : Form {
       this.tbxPigLatin.Font = new Font(FontFamily.GenericSansSerif, 12);
       this.tbxPigLatin.Size = new Size(fieldWidth, fieldHeight);
       this.tbxPigLatin.Multiline = true; 
-      this.tbxPigLatin.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+      this.tbxPigLatin.ScrollBars = 
+			System.Windows.Forms.ScrollBars.Vertical;
       this.Name = "tbxPigLatin";
 
       //Translate button
@@ -84,7 +86,8 @@ public class FormPigLatin : Form {
       this.btnTranslate.Size = new Size(btnWidth, btnHeight);
       this.btnTranslate.Font = new Font(FontFamily.GenericSansSerif, 12);
       this.btnTranslate.Text = "Translate";
-      this.btnTranslate.Click += new System.EventHandler(this.btnTranslate_Click);
+      this.btnTranslate.Click += new System.EventHandler(
+			this.btnTranslate_Click);
 
       //Clear button
       this.btnClear.Location = new Point(leftPos 
@@ -103,7 +106,7 @@ public class FormPigLatin : Form {
       this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
 
         //Pig Latin Form
-        this.ClientSize = new System.Drawing.Size(400, 400);
+      this.ClientSize = new System.Drawing.Size(400, 400);
       this.Controls.Add(this.lblEnglish);
       this.Controls.Add(this.tbxEnglish);
       this.Controls.Add(this.lblPigLatin);
@@ -111,10 +114,8 @@ public class FormPigLatin : Form {
       this.Controls.Add(this.btnTranslate);
       this.Controls.Add(this.btnClear);
       this.Controls.Add(this.btnExit);
-        this.Text = "Pig Latin Translator";
-        //this.ResumeLayout(false);
-    }
-
+      this.Text = "Pig Latin Translator";
+	}
     [STAThread]
     static void Main() {
         //set window style to current windows theme
@@ -139,11 +140,13 @@ public class FormPigLatin : Form {
       tbxPigLatin.Text = translate(tbxEnglish.Text);
    }
 
-   //splits the text in tbxEnglish into an array, loops over it, and then calls convert for
-   //each entry in the array. rejoins the string upon completion. 
+   //splits the text in tbxEnglish into an array, loops over it, and 
+	//then calls convert for each entry in the array. 
+	//rejoins the string upon completion. 
    private string translate(string s) {
       string[] delimiter = new string[] {" "};
-      string[] sArray = s.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
+      string[] sArray = s.Split(
+			delimiter, StringSplitOptions.RemoveEmptyEntries);
       for (int i = 0; i < sArray.Length; i++) {
          sArray[i] = convert(sArray[i]);
       }
@@ -178,19 +181,19 @@ public class FormPigLatin : Form {
       //reset counter
       counter = 0;
       //not a real word
-      if ((wordEnd == wordStart && notLetter(c[wordStart])) || wordEnd < wordStart) {
+      if ((wordEnd == wordStart && notLetter(c[wordStart])) || 
+			wordEnd < wordStart) {
          return s;
       }
       else {
          //get first vowel
          vowelIndex = s.ToUpper().IndexOfAny(vowels);
          //if the first letter is a vowel
-         if (vowelIndex == wordStart && !(c[wordStart] == 'Y' || c[wordStart] == 'y')) {
+         if (vowelIndex == wordStart && !(c[wordStart] == 'Y' || 
+				c[wordStart] == 'y')) {
             s = s.Insert(wordEnd + 1, "way");
             return s;
          }
-         
-         
          else {
             //if the word has no vowels, use 'ay'
             if (vowelIndex == -1) {
@@ -245,7 +248,8 @@ public class FormPigLatin : Form {
       return (!(isCapital(c) || isLowerCase(c)));
    }
 
-   // 32 is the difference between the same upper and lower case letter in C# ASCII
+   //32 is the difference between the same upper and lower case letter in 
+	//C# ASCII
    private char swapCase(char c) {
       if (isLowerCase(c)) {
          return (char) ((int) c - 32);
