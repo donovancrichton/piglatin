@@ -50,7 +50,7 @@ public class FormPigLatin : Form {
       this.lblEnglish.Text = "Enter English text here:";
       topPos += lblEnglish.Height;
        
-        //English textBox  
+      //English textBox  
       this.tbxEnglish.AcceptsReturn = true;
       this.tbxEnglish.AcceptsTab = true;
       this.tbxEnglish.Location = new Point(leftPos, topPos);
@@ -58,7 +58,7 @@ public class FormPigLatin : Form {
       this.tbxEnglish.Size = new Size(fieldWidth, fieldHeight);
       this.tbxEnglish.Multiline = true;
       this.tbxEnglish.ScrollBars = 
-			System.Windows.Forms.ScrollBars.Vertical;
+         System.Windows.Forms.ScrollBars.Vertical;
       this.Name = "tbxEnglish";
       topPos += tbxEnglish.Height + 50;
 
@@ -77,7 +77,7 @@ public class FormPigLatin : Form {
       this.tbxPigLatin.Size = new Size(fieldWidth, fieldHeight);
       this.tbxPigLatin.Multiline = true; 
       this.tbxPigLatin.ScrollBars = 
-			System.Windows.Forms.ScrollBars.Vertical;
+         System.Windows.Forms.ScrollBars.Vertical;
       this.Name = "tbxPigLatin";
 
       //Translate button
@@ -87,7 +87,7 @@ public class FormPigLatin : Form {
       this.btnTranslate.Font = new Font(FontFamily.GenericSansSerif, 12);
       this.btnTranslate.Text = "Translate";
       this.btnTranslate.Click += new System.EventHandler(
-			this.btnTranslate_Click);
+         this.btnTranslate_Click);
 
       //Clear button
       this.btnClear.Location = new Point(leftPos 
@@ -115,14 +115,15 @@ public class FormPigLatin : Form {
       this.Controls.Add(this.btnClear);
       this.Controls.Add(this.btnExit);
       this.Text = "Pig Latin Translator";
+   }
+   
+	[STAThread]
+	static void Main() {
+       //set window style to current windows theme
+   	 Application.EnableVisualStyles();
+       //Application.SetCompatibleTextRenderingDefault(false);
+       Application.Run(new FormPigLatin());
 	}
-    [STAThread]
-    static void Main() {
-        //set window style to current windows theme
-        Application.EnableVisualStyles();
-        //Application.SetCompatibleTextRenderingDefault(false);
-        Application.Run(new FormPigLatin());
-    }
 
    //exit upon click
    private void btnExit_Click(object sender, System.EventArgs e) {
@@ -141,12 +142,12 @@ public class FormPigLatin : Form {
    }
 
    //splits the text in tbxEnglish into an array, loops over it, and 
-	//then calls convert for each entry in the array. 
-	//rejoins the string upon completion. 
+   //then calls convert for each entry in the array. 
+   //rejoins the string upon completion. 
    private string translate(string s) {
       string[] delimiter = new string[] {" "};
       string[] sArray = s.Split(
-			delimiter, StringSplitOptions.RemoveEmptyEntries);
+         delimiter, StringSplitOptions.RemoveEmptyEntries);
       for (int i = 0; i < sArray.Length; i++) {
          sArray[i] = convert(sArray[i]);
       }
@@ -182,7 +183,7 @@ public class FormPigLatin : Form {
       counter = 0;
       //not a real word
       if ((wordEnd == wordStart && notLetter(c[wordStart])) || 
-			wordEnd < wordStart) {
+         wordEnd < wordStart) {
          return s;
       }
       else {
@@ -190,7 +191,7 @@ public class FormPigLatin : Form {
          vowelIndex = s.ToUpper().IndexOfAny(vowels);
          //if the first letter is a vowel
          if (vowelIndex == wordStart && !(c[wordStart] == 'Y' || 
-				c[wordStart] == 'y')) {
+            c[wordStart] == 'y')) {
             s = s.Insert(wordEnd + 1, "way");
             return s;
          }
@@ -249,7 +250,7 @@ public class FormPigLatin : Form {
    }
 
    //32 is the difference between the same upper and lower case letter in 
-	//C# ASCII
+   //C# ASCII
    private char swapCase(char c) {
       if (isLowerCase(c)) {
          return (char) ((int) c - 32);
