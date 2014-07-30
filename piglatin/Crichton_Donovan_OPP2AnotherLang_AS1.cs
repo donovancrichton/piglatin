@@ -12,15 +12,19 @@ public class FormPigLatin : Form {
    private Button btnClear;
    private Button btnExit;
 
-    //constructor
-    public FormPigLatin() {
-        InitialiseComponents();
-    }
+   //constructor
+   public FormPigLatin() {
+   	InitialiseComponents();
+	}
 
-    //initialise the form components for use
-    private void InitialiseComponents() {
-        //size and position varibles to avoid magic numbers
-      int width = 400;
+   /*****************************************************************
+	Method to initialise all the form controls and components
+	
+	@return void
+	*****************************************************************/
+   private void InitialiseComponents() {
+   //size and position varibles to avoid magic numbers
+   	int width = 400;
       int height = 400;
       int lblHeight = 24;
       int lblWidth = 300;
@@ -115,35 +119,73 @@ public class FormPigLatin : Form {
       this.Controls.Add(this.btnClear);
       this.Controls.Add(this.btnExit);
       this.Text = "Pig Latin Translator";
-   }
+  		//-------------------END initComponents METHOD-----------------
+	}
    
    [STAThread]
    static void Main() {
-      //set window style to current windows theme
+   	//set window style to current windows theme
       Application.EnableVisualStyles();
-      //Application.SetCompatibleTextRenderingDefault(false);
       Application.Run(new FormPigLatin());
    }
 
-   //exit upon click
+   /*****************************************************************
+	Exit button event handler method - exits application.
+
+	@param sender: the object sending the event, e: the event arguments
+	@return void
+	******************************************************************/
    private void btnExit_Click(object sender, System.EventArgs e) {
       Application.Exit();
    }
 
-   //clear upon click
+   /*****************************************************************
+	Clear button event hander method - clears the two text boxes
+	
+	@param sender: the object sending the event, e: event arguments
+	@return void
+	*****************************************************************/
    private void btnClear_Click(object sender, System.EventArgs e) {
-      tbxEnglish.Text = "";
-      tbxPigLatin.Text = "";
+      tbxEnglish.Text = null;
+      tbxPigLatin.Text = null;
    }
 
-   //translate upon click
+   /*****************************************************************
+	Translate button event handler method
+
+	<p>
+	Checks to see if the english text box has no 'real' text, if not
+	then calls the translate method and assignes the result to the 
+	pig latin text box
+	</p>
+
+	@param sender: the object sending the event, e: event arguments
+	@return void
+	@see methods translate, convert
+	*****************************************************************/
    private void btnTranslate_Click(object sender, System.EventArgs e) {
-      tbxPigLatin.Text = translate(tbxEnglish.Text);
+      if (tbxEnglish.Text.Equals('\t') || tbxEnglish.Text.Equals(' ') ||
+         tbxEnglish.Text.Equals(null)) {
+            return;
+      }
+      else {
+         tbxPigLatin.Text = translate(tbxEnglish.Text);
+      }
    }
 
-   //splits the text in tbxEnglish into an array, loops over it, and 
-   //then calls convert for each entry in the array. 
-   //rejoins the string upon completion. 
+   /*****************************************************************
+	Translates a string from english to piglatin.
+
+	<p>
+	Splits the incoming string into an array, and looks over the array
+	once (taking N time), calling the convert method for each entry
+	before joining the string upon completion	
+	</p>
+
+	@param s: the incoming english string for translation
+	@return string: the completed piglatin translation from english
+	@see methods btnTranslate_Click, convert
+	*****************************************************************/
    private string translate(string s) {
       string[] delimiter = new string[] {" "};
       string[] sArray = s.Split(
@@ -151,106 +193,99 @@ public class FormPigLatin : Form {
       for (int i = 0; i < sArray.Length; i++) {
          sArray[i] = convert(sArray[i]);
       }
-      return String.Join(" ", sArray);
+      s = String.Join (" ", sArray);
+      return s;
    }
 
-   //executes the actual pig latin translation logic
+   /*****************************************************************
+	Executes the piglatin translation logic
+
+	<p>
+	performs a number of logical boolean tests to determine the specific
+	translation operations to perform on the incoming english word in
+	order to convert to piglatin.
+	NOTE: used char and ASCII, along with string methods to demonstrate
+			knowledge of both sets of operations.
+	</p>
+
+	@param s: the incoming english word
+	@return string: the converted piglatin word
+	@see methods translate, btnTranslate_Click
+	******************************************************************/
    private string convert(string s) {
       //declare conversion variables
       int wordStart = 0;
       int wordEnd = 0;
       int vowelIndex = 0;
-      int counter = 0;
-      int tick = 0;
-      string temp = null;
       char[] vowels = new char[] {'A', 'E', 'I', 'O', 'U', 'Y'};
       char[] c = new char[s.Length];
-
-      //initialise character array to allow manipulation 
-      c = s.ToCharArray();
-      //check for pre-word non-letter symbols
-      while (notLetter(c[counter]) && counter < c.Length - 1) {
-         counter++;
-      }   
-      wordStart = counter;
-      counter = c.Length - 1;
-      //check for post-word non-letter symbols
-      while (notLetter(c[counter]) && counter > 0 ) {
-         counter--;
+      //begin execution
+		c = s.ToCharArray(); 
+      wordStart = wordStartIndex(c);
+      wordEnd = wordEndIndex(c);
+      //Y is treated as a consonant if its the first letter
+		if (c[wordStart] == 'y' || c[wordStart] =='Y') {
+        vowelIndex = 1;
+      } 
+      else {
+         vowelIndex = s.ToUpper().IndexOfAny(vowels);
       }
-      wordEnd = counter;
-      //reset counter
-      counter = 0;
-      //not a real word
-      if ((wordEnd == wordStart && notLetter(c[wordStart])) || 
-         wordEnd < wordStart) {
+      if (leaveUnchanged(c, wordStart, wordEnd)) {
          return s;
       }
+      else if (vowelIndex == -1) {
+       return useAy(s, wordEnd);
+      }
+      else if (firstLetterVowel(c, wordStart, vowelIndex)) {
+         return useWay(s, wordEnd);
+      }
       else {
-         //get first vowel
-         vowelIndex = s.ToUpper().IndexOfAny(vowels);
-         //if the first letter is a vowel
-         if (vowelIndex == wordStart && !(c[wordStart] == 'Y' || 
-            c[wordStart] == 'y')) {
-            s = s.Insert(wordEnd + 1, "way");
-            return s;
-         }
-         else {
-            //if the word has no vowels, use 'ay'
-            if (vowelIndex == -1) {
-               s = s.Insert(wordEnd + 1, "ay");
-               return s;
-            }
-            
-            //ensure correct capitalisation
-            if (isCapital(c[wordStart])) {
-               c[wordStart] = swapCase(c[wordStart]);
-               c[vowelIndex] = swapCase(c[vowelIndex]);
-            }
-            
-            //keep words with non apostrophe symbols unchanged
-            for (int i = wordStart; i <= wordEnd; i++) {
-               if (notLetter(c[i]) && !(c[i] == 39)) {
-                  counter++;
-               }
-               if (c[i] == 30) {
-                  tick++;
-               }
-               if (counter != 0 || tick > 1) {
-                  return s;
-               }
-            }
-            //regular translation
-            s = new string(c);
-            //used to avoid bug - probably needs a rewrite
-            if (c[wordStart] == 'y' || c[wordStart] =='Y') {
-               vowelIndex = 1;
-            }
-            temp = s.Substring(wordStart, vowelIndex - wordStart);
-            System.Console.WriteLine(temp);
-            s = s.Insert(wordEnd + 1, temp + "ay");
-            s = s.Remove (wordStart, vowelIndex - wordStart);
-            return s;
-         }
+         s = swapLetters(s, wordStart, wordEnd, vowelIndex);
+         return useAy(s, wordEnd);      
       }
    }
    
-   // C# ASCII code for lower and upper bounds of capital letters
+	/******************************************************************
+	Checks if a character is a capital letter based on ASCII values
+	
+	@param c: the character checked
+	@return bool: true if the character is a capital letter
+	@see methods: swapCase, notLetter
+	******************************************************************/   
    private bool isCapital(char c) {
       return (c > 64 && c < 91);
    }
 
-   // C# ASCII code for lower and upper bounds of lower case letters
+   /******************************************************************
+	Checks if a character is a lower case letter based on ASCII values
+
+	@param c: the character checked
+	@return bool: true if the character is lower case
+	@see methods: swapCase, notLetter
+	******************************************************************/
    private bool isLowerCase(char c) {
       return (c > 96 && c < 123);
    }
 
-   private bool notLetter(char c) {
+	/*****************************************************************
+	Checks if the character is not a letter
+	
+	@param c: the character checked
+	@return bool: returns true if the character is not a letter
+	@see methods: isLowerCase, isCapital
+	*******************************************************************/   
+	private bool notLetter(char c) {
       return (!(isCapital(c) || isLowerCase(c)));
    }
 
-   //32 is the difference between the same upper and lower case letter in 
-   //C# ASCII
+   /******************************************************************
+	Swaps the case of a letter via ASCII, doing nothing if not a letter
+
+	@param c: The character to swap
+	@return char: The upper case of c if c is lower, the lower case if
+		c is upper, or c if neither.
+	@see methods: isLowerCase, isCapital
+	*******************************************************************/
    private char swapCase(char c) {
       if (isLowerCase(c)) {
          return (char) ((int) c - 32);
@@ -260,4 +295,182 @@ public class FormPigLatin : Form {
       }
       else return c;
    }
+   
+   /******************************************************************
+	Finds the array index of the first letter in a word
+
+	@param c: the character array to search
+	@return int: the index of the first letter
+	@see method: convert
+	*******************************************************************/
+	private int wordStartIndex(char[] c) {
+      for (int i = 0; i < c.Length - 1; i++) {
+            if (!notLetter(c[i])) {
+				return i;
+			}   
+		}
+      return -1;
+	}
+   
+	/******************************************************************
+	Finds the array index of the last letter in a word
+
+	@param c: the character array to search
+	@return int: the index of the last letter
+	@see method: convert
+	******************************************************************/   
+	private int wordEndIndex(char[] c) {
+   	for (int i = c.Length - 1; i > 0; i--) {
+      	if (!notLetter(c[i])) {
+         	return i;
+         }
+      }
+     	return -1;
+	}
+      
+   /***************************************************************
+	Checks if the word should be left as is
+	
+	<p>
+	A word should be left as is if it contains more than one ' or
+	if it contains any character that is not a letter
+	NOTE: word in this instance excludes any pre and post punctuation
+			so 'hello' would return false, but 'he'l'lo' would return true
+	</p>
+   
+	@param c: the character array to search through
+	@param start: the index of the first letter of the word
+	@param end: the index of the last letter of the word
+	@return bool: succeeds if word contains a special character or multiple
+					  apostrophes
+	@see methods: convert, notLetter, notAWord
+	**********************************************************************/
+	private bool leaveUnchanged(char[] c, int start, int end) {
+   	int counter = 0;
+		int tick = 0;
+      bool check = false;
+		for (int i = start; i <= end; i++) {
+      	//count special characters
+			if (notLetter(c[i]) && !(c[i] == 39)) {
+         	counter++;
+        	}
+         //check for multiple ' in a word
+			if (c[i] == 39) {
+         	tick++;
+         }
+         //break loop upon termination condition
+			if (counter != 0 || tick > 1) {
+         	check = true;
+         	break;
+         }
+		}
+      return notAWord(c, start, end) || check;
+	}  
+      
+   /**********************************************************************
+	Checks if the incoming char array is not actually a word
+
+	@param c: the char array to check
+	@int start: the index of the first letter of the word
+	@int end: the index of the last letter of the word
+	@return bool: succeeds if the first letter > last letter or if index
+					  of both are equal but notLetter succeeds.
+	@see methods: notLetter, convert
+	**********************************************************************/
+	private bool notAWord(char[] c, int start, int end) {
+      return (end == start && notLetter(c[start])) || (end < start);
+      }
+      
+   /**********************************************************************
+	Checks if the first letter is a vowel
+	
+	@param c: the character array to check
+	@param start: the starting index of the word
+	@param index: the index of the first vowel in the word
+	@return book: succeeds if the first letter is a vowel
+	@see method: convert
+	**********************************************************************/
+	private bool firstLetterVowel(char[] c, int start, int index) {
+      return index == start && !(c[start] == 'Y' || c[start] == 'y');      
+   }
+      
+   /*********************************************************************
+	Appends the suffix 'way' to the incoming string.
+
+	@param s: the incoming string
+	@param end: the index of the last letter of the word
+	@return string: the modified string to include 'way'
+	@see methods: convert, lastLetterCaps
+	**********************************************************************/
+	private string useWay(string s, int end) {
+      if (lastLetterCaps(s, end)) {
+         return s.Insert(end + 1, "WAY");
+      }
+      else {
+         return s.Insert(end + 1, "way");
+      }
+   }
+      
+   /*********************************************************************
+	Appends the suffice 'ay' to the incoming string
+
+	@param s: the incoming string
+	@param end: the index of the last letter of the word
+	@return string: the modified string to include 'ay'
+	@see methods: convert, lastLetterCaps
+	*********************************************************************/
+	private string useAy(string s, int end) {
+   	if (lastLetterCaps(s, end)) {
+         return s.Insert(end + 1, "AY");
+      }
+      else {
+         return s.Insert(end + 1, "ay");
+      }
+   }
+      
+   /*********************************************************************
+	Checks if the last letter of a word is upper case
+	<p>
+	NOTE: did not use isCapital or isLowerCase above in order to demonstrate
+			knowledge of string methods
+	</p>
+
+	@param s: the string to check
+	@param end: the index of the last letter in the string
+	@return book: succeeds if the last letter is upper case
+	@see methods: useWay, useAy
+	***********************************************************************/
+	private bool lastLetterCaps(string s, int end) {
+   	return s[end].ToString().Equals(s[end].ToString().ToUpper());
+   }
+
+   /********************************************************************
+	Performs the iconic pig latin swap.
+
+	<p>
+	Specifically, moves the first consonant sound in a word to the end of
+	said word, treating the letter 'y' as a vowel if not the first letter.
+	</p>
+	
+	@param s: the string to modify
+	@param start: the index of starting letter of the word
+	@param end: the index of the ending letter of the word
+	@param vowel: the index of the first vowel in the word
+	@return string: the modified string
+	@see methods: convert, isCpaital, swapCase
+	*********************************************************************/
+	private string swapLetters(string s, int start, int end, int vowel) {
+      char[] c = s.ToCharArray();
+      if (isCapital(c[start]) && !isCapital(c[vowel])) {
+         c[start] = swapCase(c[start]);
+         c[vowel] = swapCase(c[vowel]);
+      }
+      s = new string(c);
+      string temp;
+        temp = s.Substring(start, vowel - start);
+        s = s.Insert(end + 1, temp);
+        s = s.Remove(start, vowel - start);
+        return s;      
+   }
+	//----------------------END FormPigLatin---------------------------
 }
